@@ -16,7 +16,7 @@
     <section>
       <div v-if="taskList.length > 0">
         <ul v-for="task in taskList" :key="task.id">
-          <li v-bind:class="{completedTask: task.isComplete}">
+          <li v-bind:class="{ completedTask: task.isComplete }">
             {{ task.text }}
             <button v-on:click="completeTask(task.id)">Complete</button>
             <button v-on:click="deleteTask(task.id)">Remove</button>
@@ -42,6 +42,11 @@ export default {
       activeTask: {},
     };
   },
+  // similar to fetch
+  created() {
+    const data = localStorage.getItem('VUE-TASKS')
+    this.taskList = [...JSON.parse(data)]
+  },
   methods: {
     addTask() {
       if(!this.edit) {
@@ -52,9 +57,22 @@ export default {
       };
       this.taskList = [...this.taskList, newTask];
       this.formText = '';
+      localStorage.setItem("VUE-TASKS", JSON.stringify(this.taskList));
         } else if(this.edit) {
           // reassigning state -> this.taskList = this.Tasklist.map...
           this.taskList = this.taskList.map(task => task.id === this.activeTask.id ? {...task, text: this.formText} : task)
+              localStorage.setItem(
+          "VUE-TASKS",
+          JSON.stringify(
+            this.taskList.map((task) =>
+              task.id === this.activeTask.id
+                ? { ...task, text: this.formText }
+                : task
+            )
+          )
+        );
+        this.editing = !this.editing
+        this.formText = ''
           }
     },
     completeTask(id) {
@@ -65,9 +83,11 @@ export default {
         isComplete: !newList[taskIndex].isComplete,
       };
       this.taskList = newList;
+      localStorage.setItem("VUE-TASKS", JSON.stringify(newList))
     },
     deleteTask(id) {
       this.taskList = this.taskList.filter((task) => task.id !== id);
+      localStorage.setItem("VUE-TASKS", JSON.stringify(this.taskList = this.taskList.filter((task) => task.id !== id)))
     },
     editTask(task) {
       this.edit = !this.edit;
