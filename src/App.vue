@@ -1,16 +1,21 @@
 <template>
+  <div>
+  <Navbar />
   <div id="app">
     <Tasks msg="TO-DO APP"/>
+  </div>
   </div>
 </template>
 
 <script>
 import Tasks from './components/Tasks.vue'
+import Navbar from './components/Navbar.vue'
 
 export default {
   name: 'App',
   components: {
-    Tasks
+    Tasks,
+    Navbar
   }
 }
 </script>
