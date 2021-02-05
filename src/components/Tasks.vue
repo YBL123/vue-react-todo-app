@@ -12,6 +12,7 @@
       />
       <button type="submit">Add Task</button>
     </form>
+    <small v-if="success">{{ success }}</small>
 
     <section>
       <div v-if="taskList.length > 0">
@@ -40,29 +41,42 @@ export default {
       taskList: [],
       edit: false,
       activeTask: {},
+      success: '',
     };
   },
   // similar to fetch
   created() {
-    const data = localStorage.getItem('VUE-TASKS')
-    this.taskList = [...JSON.parse(data)]
+    const data = localStorage.getItem('VUE-TASKS');
+    this.taskList = [...JSON.parse(data)];
   },
   methods: {
     addTask() {
-      if(!this.edit) {
-              const newTask = {
-        id: Math.random().toString(),
-        text: this.formText,
-        isComplete: false,
-      };
-      this.taskList = [...this.taskList, newTask];
-      this.formText = '';
-      localStorage.setItem("VUE-TASKS", JSON.stringify(this.taskList));
-        } else if(this.edit) {
-          // reassigning state -> this.taskList = this.Tasklist.map...
-          this.taskList = this.taskList.map(task => task.id === this.activeTask.id ? {...task, text: this.formText} : task)
-              localStorage.setItem(
-          "VUE-TASKS",
+      if (!this.edit) {
+        const newTask = {
+          id: Math.random().toString(),
+          text: this.formText,
+          isComplete: false,
+        };
+        this.taskList = [...this.taskList, newTask];
+        this.formText = '';
+        this.success ='Task has been added'
+        const timedSuccessMsg = () =>
+          setInterval(() => {
+            this.success = '';
+          }, 2000);
+        timedSuccessMsg();
+        clearInterval(timedSuccessMsg);
+
+        localStorage.setItem('VUE-TASKS', JSON.stringify(this.taskList));
+      } else if (this.edit) {
+        // reassigning state -> this.taskList = this.Tasklist.map...
+        this.taskList = this.taskList.map((task) =>
+          task.id === this.activeTask.id
+            ? { ...task, text: this.formText }
+            : task
+        );
+        localStorage.setItem(
+          'VUE-TASKS',
           JSON.stringify(
             this.taskList.map((task) =>
               task.id === this.activeTask.id
@@ -71,9 +85,9 @@ export default {
             )
           )
         );
-        this.editing = !this.editing
-        this.formText = ''
-          }
+        this.editing = !this.editing;
+        this.formText = '';
+      }
     },
     completeTask(id) {
       const taskIndex = this.taskList.findIndex((task) => task.id === id);
@@ -83,11 +97,16 @@ export default {
         isComplete: !newList[taskIndex].isComplete,
       };
       this.taskList = newList;
-      localStorage.setItem("VUE-TASKS", JSON.stringify(newList))
+      localStorage.setItem('VUE-TASKS', JSON.stringify(newList));
     },
     deleteTask(id) {
       this.taskList = this.taskList.filter((task) => task.id !== id);
-      localStorage.setItem("VUE-TASKS", JSON.stringify(this.taskList = this.taskList.filter((task) => task.id !== id)))
+      localStorage.setItem(
+        'VUE-TASKS',
+        JSON.stringify(
+          (this.taskList = this.taskList.filter((task) => task.id !== id))
+        )
+      );
     },
     editTask(task) {
       this.edit = !this.edit;
